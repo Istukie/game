@@ -1,25 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whiskers' Adventure</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cute Cat Cult Town</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #d7f0f5;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>Whiskers' Adventure</h1>
-        <div class="game-screen">
-            <div class="cat" id="cat"></div>
-        </div>
-        <div class="controls">
-            <button onclick="moveCat('left')">Move Left</button>
-            <button onclick="moveCat('right')">Move Right</button>
-            <button onclick="moveCat('up')">Move Up</button>
-            <button onclick="moveCat('down')">Move Down</button>
-        </div>
-    </div>
+<canvas id="gameCanvas"></canvas>
 
-    <script src="script.js"></script>
+<script>
+  // Canvas setup
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  // Load images
+  const catImage = new Image();
+  const backgroundImage = new Image();
+  catImage.src = "data:image/png;base64,<insert_base64_encoded_cat_sprite_here>";
+  backgroundImage.src = "data:image/png;base64,<insert_base64_encoded_town_background_here>";
+
+  // Cat properties
+  const cat = {
+    x: canvas.width / 2 - 32,
+    y: canvas.height / 2 - 32,
+    width: 64,
+    height: 64,
+    speed: 4,
+  };
+
+  const keys = {
+    ArrowUp: false,
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false,
+  };
+
+  // Event listeners for movement
+  window.addEventListener("keydown", (e) => {
+    if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+  });
+
+  window.addEventListener("keyup", (e) => {
+    if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+  });
+
+  // Draw the background
+  function drawBackground() {
+    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+  }
+
+  // Draw the cat
+  function drawCat() {
+    ctx.drawImage(catImage, cat.x, cat.y, cat.width, cat.height);
+  }
+
+  // Move the cat
+  function moveCat() {
+    if (keys.ArrowUp && cat.y > 0) cat.y -= cat.speed;
+    if (keys.ArrowDown && cat.y < canvas.height - cat.height) cat.y += cat.speed;
+    if (keys.ArrowLeft && cat.x > 0) cat.x -= cat.speed;
+    if (keys.ArrowRight && cat.x < canvas.width - cat.width) cat.x += cat.speed;
+  }
+
+  // Game loop
+  function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBackground();
+    moveCat();
+    drawCat();
+    requestAnimationFrame(gameLoop);
+  }
+
+  // Start the game loop when images are loaded
+  backgroundImage.onload = () => {
+    catImage.onload = () => {
+      gameLoop();
+    };
+  };
+</script>
 </body>
 </html>
